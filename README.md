@@ -15,11 +15,17 @@ This document contains the installation procedure for cephmetrics released on Ju
 - Passwordless sudo access on the ceph and dashboard hosts
 - All hosts must share the same DNS domain
 
+## Expected configuration
+
+After running this procedure, the following configuration is expected.
+- The ceph nodes will basically remain unchanged, except that repos necessary for interacting with the cephmetrics host machine will be installed.
+- The cephmetrics host machine will have a dashboard installed which the user can then use to observe the ceph network.
+
 ## Installation
 
 ### Install executables
 
-On the host machine on which you will run ansible-playbook, do the following:
+On the host machine on which you will run ansible-playbook, do the following steps.  This will install a repo which includes the cephmetrics installation code and ansible (version 2.2.3 or later):
 ```
 - sudo su -
 - mkdir ~/cephmetrics
@@ -39,10 +45,12 @@ The cephmetrics repo also needs to be installed on all the ceph nodes as well.  
 
 ### Edit the inventory file
 
-A file named ~/cephmetrics/inventory needs to be created.  Ansible-playbook will use this inventory file when installing cephmetrics.  Inventory is an INI-like format file with entries for ceph-grafana and all the parts of the ceph cluster.  Its format looks like:
+A file named ~/cephmetrics/inventory needs to be created.  Ansible-playbook will use this inventory file when installing cephmetrics.  Inventory is an INI-like format file with entries for ceph-grafana and all the parts of the ceph cluster.  A template for this file can be copied from ~/cephmetrics/ansible/inventory.sample
+
+Its format looks like:
 
     [ceph-grafana]
-    cephmetrics.example.com ansible_connection=local
+    grafana_host.example.com
 
     [osds]
     osd0.example.com
@@ -60,9 +68,14 @@ A file named ~/cephmetrics/inventory needs to be created.  Ansible-playbook will
     [rgws]
     rgw0.example.com
 
+Since we are running `ansible-playbook` directly on the dashboard (`ceph-grafana`) host, the inventory entry should look like:
+    ```
+    [ceph-grafana]
+    grafana_host.example.com ansible_connection=local
+    ```
 Omit the mdss section if no ceph mds nodes are installed.  Omit the rgws section if no rgw nodes are installed.
 
-Ansible variables can be set in ~/cephmetrics/vars.yml if the user so desires.  See ./ansible/ansible.md for more information.
+Ansible variables can be set in ~/cephmetrics/vars.yml if the user so desires.  [Click here](./ansible/ansible.md) for more information.
 
 ## Run the ansible-playbook
 
