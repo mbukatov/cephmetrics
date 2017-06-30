@@ -20,14 +20,22 @@ This document contains the installation procedure for cephmetrics released on Ju
 ### Install executables
 
 On the host machine on which you will run ansible-playbook, do the following:
+```
 - sudo su -
 - mkdir ~/cephmetrics
 - subscription-manager repos --enable rhel-7-server-rhscon-2-installer-rpms
 - cd /etc/yum.repos.d/
-- curl -L -o cephmetrics-deps.repo https://chacra.ceph.com/repos/cephmetrics/dependencies/HEAD/rhel/7/repo
-- sed -i -e 's/\[cephmetrics/\[cephmetrics-deps/' cephmetrics-deps.repo
-- curl -L -o cephmetrics.repo https://shaman.ceph.com/api/repos/cephmetrics/master/latest/centos/7/repo/
+- curl -L -O http://download.ceph.com/cephmetrics/rpm-master/el7/cephmetrics.repo
 - yum install cephmetrics-ansible
+```
+
+The cephmetrics repo also needs to be installed on all the ceph nodes as well.  Run the following steps on each ceph host:
+```
+- sudo su -
+- cd /etc/yum.repos.d/
+- curl -L -O http://download.ceph.com/cephmetrics/rpm-master/el7/cephmetrics.repo
+- yum install cephmetrics-ansible
+```
 
 ### Edit the inventory file
 
@@ -54,12 +62,7 @@ A file named ~/cephmetrics/inventory needs to be created.  Ansible-playbook will
 
 Omit the mdss section if no ceph mds nodes are installed.  Omit the rgws section if no rgw nodes are installed.
 
-## Edit the vars.yml file
-
-Vars.yml is used to override defaults used by the ansible installation procedure.  Run the following:
-- echo "devel_mode: false" > ~/cephmetrics/vars.yml
-
-There are other variables that can be set if the user so desires.  See ./ansible/ansible.md for more information.
+Ansible variables can be set in ~/cephmetrics/vars.yml if the user so desires.  See ./ansible/ansible.md for more information.
 
 ## Run the ansible-playbook
 
